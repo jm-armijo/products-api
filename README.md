@@ -10,14 +10,14 @@ This app is a generic API to add and get products from a database. It is made ou
 
 Docker version >=19.03.8
 
-### Start the apps
+### Start apps
 
 Run the following command:
 ```
 bash start.sh
 ```
 
-### Stop the API only (DB remains up)
+### Stop apps
 
 Run the following command:
 ```
@@ -31,6 +31,20 @@ docker stop products-db
 docker rm products-db
 docker image rm products-db
 ```
+
+### Security
+
+The API uses secure connections for all endpoints: the path to the certificate and its key specified through environment variables (see below).
+
+The certificate provided is self-signed, which means that curl must be used with option `-k` (insecure).
+
+
+### Environment variables
+
+The API uses Environment Variables to control its behaviour. These variables are specified in the `env.list` files in the `api` and `db` directories (one file per component).
+
+Any changes to these variables will take effect after the components (i.e. db and/or api) are restarted.
+
 
 ## Usage
 

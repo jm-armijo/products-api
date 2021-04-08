@@ -16,8 +16,8 @@ run_container() {
     port=$2
     if [[ $(docker ps -a | grep $name | wc -l ) = 0 ]]; then
         echo -e "\nDocker container $name does not exists: creating and starting..."
-        echo -e "docker run --name $name -d --network=products-network -p $port:$port $name"
-        docker run --name $name -d --network=products-network -p $port:$port $name
+        echo -e "docker run --name $name -d --network=products-network -p $port:$port --env-file ./env.list $name"
+        docker run --name $name -d --network=products-network -p $port:$port --env-file ./env.list $name
     elif [[ $(docker ps | grep $name | wc -l ) = 0 ]]; then
         echo -e "\nDocker container $name is stopped: starting..."
         echo -e "docker start $name"
