@@ -50,13 +50,29 @@ Any changes to these variables will take effect after the components (i.e. db an
 
 #### Create new product
 
-# `POST /products` - creates a new product.
+`POST /products` - creates a new product.
 
 ```
-curl -X POST -H "Content-Type: application/json" -d '{
+curl -k -X POST -H "Content-Type: application/json" -d '{
     "name": "prod1",
     "description": "my 1st product",
     "price": 23,
     "deliveryPrice": 3.5
 }' http://localhost:5000/products
+```
+
+#### Get all products
+
+`GET /products` - gets all products.
+
+```
+curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/products
+```
+
+#### Get producs by name
+
+`GET /products?name={name}` - finds all products matching the specified name.
+
+```
+curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/products?name=name
 ```
