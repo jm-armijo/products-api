@@ -8,7 +8,8 @@ import { ProductsModule } from './products/products.module';
     imports: [
         ProductsModule,
         MongooseModule.forRoot(
-            'mongodb://api:password@products-db:27017/core'
+            'mongodb://api:password@products-db:27017/core',
+            { useFindAndModify: false },
         ),
     ],
 })
