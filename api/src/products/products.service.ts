@@ -41,6 +41,34 @@ export class ProductsService {
         return this.mapProduct(product);
     }
 
+    async update(
+        id:            string,
+        name:          string,
+        description:   string,
+        price:         number,
+        deliveryPrice: number,
+    ) : Promise<void> {
+		let update: any = {};
+
+		if (name !== undefined) {
+			update.name = name;
+		}
+
+		if (description !== undefined) {
+			update.description = description;
+		}
+
+		if (price !== undefined) {
+			update.price = price;
+		}
+
+		if (deliveryPrice !== undefined) {
+			update.deliveryPrice = deliveryPrice;
+		}
+
+        const product = await this.productModel.findByIdAndUpdate(id, update);
+    }
+
     mapProduct(product: Product) {
         if (product == undefined) {
             return {};

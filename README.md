@@ -84,3 +84,16 @@ curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/product
 ```
 curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/products/606fd7419d9e58001e151ff8
 ```
+
+#### Update a product
+
+`PUT /products/{id}` - updates a product.
+
+```
+curl -k -X PIT -H "Content-Type: application/json" -d '{
+    "name": "prod1",
+    "description": "my 1st product",
+    "price": 23,
+    "deliveryPrice": 3.5
+}' http://localhost:5000/products/{id}
+```
