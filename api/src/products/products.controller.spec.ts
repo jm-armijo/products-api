@@ -11,10 +11,35 @@ describe('ProductsController', () => {
         ) : Promise<any> {}
 
         public async getList(name: string) : Promise<any> {}
+        public async getOne(name: string) : Promise<any> {}
     }
 
     let controller: ProductsController;
     let service:    ProductsService;
+
+    const prod1 = {
+        id:            'zxcvb-mnbvc-lkjhg',
+        name:          'prod1',
+        description:   'desc1',
+        price:         12,
+        deliveryPrice: 3,
+    };
+
+    const prod2 = {
+        id:            'zxcvb-mnbvc-lkjhk',
+        name:          'prodx',
+        description:   'desc2',
+        price:         13,
+        deliveryPrice: 4,
+    };
+
+    const prod3 = {
+        id:            'zxcvb-mnbvc-lkjhl',
+        name:          'prodx',
+        description:   'desc3',
+        price:         14,
+        deliveryPrice: 5,
+    };
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -73,31 +98,6 @@ describe('ProductsController', () => {
     });
 
     describe('getList', () => {
-
-        const prod1 = {
-            id:            'zxcvb-mnbvc-lkjhg',
-            name:          'prod1',
-            description:   'desc1',
-            price:         12,
-            deliveryPrice: 3,
-        };
-
-        const prod2 = {
-            id:            'zxcvb-mnbvc-lkjhk',
-            name:          'prodx',
-            description:   'desc2',
-            price:         13,
-            deliveryPrice: 4,
-        };
-
-        const prod3 = {
-            id:            'zxcvb-mnbvc-lkjhl',
-            name:          'prodx',
-            description:   'desc3',
-            price:         14,
-            deliveryPrice: 5,
-        };
-
         it('should return all products when name is undefined',  async () => {
             const name = undefined;
             const query = { name: name, };
@@ -129,6 +129,40 @@ describe('ProductsController', () => {
             const actual = await controller.getList(query);
             const expected = list
             expect(actual).toEqual(expected);
+        });
+    });
+
+    describe('getOne', () => {
+        it('should return one product when product exists',  async () => {
+            const id    = 'zxcvb-mnbvc-lkjhg';
+            jest.spyOn(service, 'getOne').mockResolvedValueOnce(prod1);
+
+            const actual = await controller.getOne(id);
+            const expected = prod1
+            expect(actual).toEqual(expected);
+        });
+
+        it('should return empty when product does not exist',  async () => {
+            const id    = 'no-product-for-this-id';
+            const empty_product = {};
+            jest.spyOn(service, 'getOne').mockResolvedValueOnce(empty_product);
+
+            const actual = await controller.getOne(id);
+            const expected = empty_product;
+            expect(actual).toEqual(expected);
+        });
+
+        it('should raise error when service throws',  async () => {
+            const id = 'bad-id';
+            const list = [];
+
+            jest.spyOn(service, "getOne").mockImplementationOnce(() => { throw new Error("CastError"); });
+            try {
+                const actual = await controller.getOne(id);
+                expect(actual).toBeUndefined();
+            } catch (error) {
+                expect(error.message).toEqual('CastError');
+            }
         });
     });
 });

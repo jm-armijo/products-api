@@ -2,6 +2,7 @@ import {
     Body,
     Controller,
     Get,
+    Param,
     Post,
     Query,
 } from '@nestjs/common';
@@ -30,10 +31,12 @@ export class ProductsController {
     }
 
     @Get()
-    async getList(
-        @Query() query,
-    ) {
-        const products = await this.productsService.getList(query.name);
-        return products;
+    async getList(@Query() query) {
+        return await this.productsService.getList(query.name);
+    }
+
+    @Get(':id')
+    async getOne(@Param('id') id: string) {
+        return await this.productsService.getOne(id);
     }
 }

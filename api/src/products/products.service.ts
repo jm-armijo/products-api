@@ -31,13 +31,27 @@ export class ProductsService {
     ) {
         const filter = name == undefined ? undefined : { name: name };
         const products = await this.productModel.find(filter).exec();
+        return products.map(product => (this.mapProduct(product)));
+    }
 
-        return products.map(product => ({
+    async getOne(
+        id: string,
+    ) {
+        const product = await this.productModel.findById(id).exec();
+        return this.mapProduct(product);
+    }
+
+    mapProduct(product: Product) {
+        if (product == undefined) {
+            return {};
+        }
+
+        return {
             id:            product.id,
             name:          product.name,
             description:   product.description,
             price:         product.price,
             deliveryPrice: product.deliveryPrice,
-        }));
+        };
     }
 }

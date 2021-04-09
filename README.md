@@ -69,10 +69,18 @@ curl -k -X POST -H "Content-Type: application/json" -d '{
 curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/products
 ```
 
-#### Get producs by name
+#### Get products by name
 
 `GET /products?name={name}` - finds all products matching the specified name.
 
 ```
 curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/products?name=name
+```
+
+#### Get product by id
+
+`GET /products/{id}` - gets the project that matches the specified ID - ID is a GUID.
+
+```
+curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/products/606fd7419d9e58001e151ff8
 ```
