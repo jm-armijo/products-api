@@ -48,25 +48,30 @@ export class ProductsService {
         price:         number,
         deliveryPrice: number,
     ) : Promise<void> {
-		let update: any = {};
+        let update: any = {};
 
-		if (name !== undefined) {
-			update.name = name;
-		}
+        if (name !== undefined) {
+            update.name = name;
+        }
 
-		if (description !== undefined) {
-			update.description = description;
-		}
+        if (description !== undefined) {
+            update.description = description;
+        }
 
-		if (price !== undefined) {
-			update.price = price;
-		}
+        if (price !== undefined) {
+            update.price = price;
+        }
 
-		if (deliveryPrice !== undefined) {
-			update.deliveryPrice = deliveryPrice;
-		}
+        if (deliveryPrice !== undefined) {
+            update.deliveryPrice = deliveryPrice;
+        }
 
-        const product = await this.productModel.findByIdAndUpdate(id, update);
+        await this.productModel.findByIdAndUpdate(id, update);
+    }
+
+    // TODO : also delete the product's option
+    async delete(id: string) {
+        await this.productModel.findByIdAndDelete(id);
     }
 
     mapProduct(product: Product) {

@@ -11,7 +11,8 @@ describe('ProductsController', () => {
         ) : Promise<any> {}
 
         public async getList(name: string) : Promise<any> {}
-        public async getOne(name: string) : Promise<any> {}
+        public async getOne(name: string)  : Promise<any> {}
+        public async delete(name: string)  : Promise<any> {}
 
         public async update(
             id:            string,
@@ -171,6 +172,35 @@ describe('ProductsController', () => {
         it('should raise error when service throws',  async () => {
             jest.spyOn(service, 'update').mockImplementationOnce(() => { throw new Error('AnyError'); });
             await expect(controller.update(id, name, description, price, deliveryPrice)).rejects.toThrow('AnyError');
+        });
+    });
+
+    describe('delete', () => {
+        it('should delete one product when product exists',  async () => {
+            const id = 'zxcvb-mnbvc-lkjhg';
+            jest.spyOn(service, 'delete').mockResolvedValueOnce(prod1);
+
+            const actual   = await controller.delete(id);
+            const expected = prod1
+            expect(actual).toEqual(expected);
+        });
+
+        it('should raise error when product does not exist',  async () => {
+            const id      = 'no-product-for-this-id';
+            const product = {};
+            jest.spyOn(service, 'delete').mockResolvedValueOnce(product);
+
+            const actual   = await controller.delete(id);
+            const expected = product;
+            expect(actual).toEqual(expected);
+        });
+
+        it('should raise error when service throws',  async () => {
+            const id   = 'bad-id';
+            const list = [];
+
+            jest.spyOn(service, 'delete').mockImplementationOnce(() => { throw new Error('CastError'); });
+            await expect(controller.delete(id)).rejects.toThrow('CastError');
         });
     });
 });

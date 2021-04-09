@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Param,
     Put,
@@ -56,5 +57,10 @@ export class ProductsController {
             price,
             deliveryPrice,
         );
+    }
+
+    @Delete(':id')
+    async delete(@Param('id') id: string) {
+        return await this.productsService.delete(id);
     }
 }

@@ -97,3 +97,11 @@ curl -k -X PIT -H "Content-Type: application/json" -d '{
     "deliveryPrice": 3.5
 }' http://localhost:5000/products/{id}
 ```
+
+#### Delete a product
+
+`DELETE /products/{id}` - deletes a product and its options.
+
+```
+curl -k -X DELETE -H "Content-Type: application/json" http://localhost:5000/products/606fd7419d9e58001e151ff8
+```
