@@ -105,3 +105,49 @@ curl -k -X PIT -H "Content-Type: application/json" -d '{
 ```
 curl -k -X DELETE -H "Content-Type: application/json" http://localhost:5000/products/606fd7419d9e58001e151ff8
 ```
+
+#### Create an option
+
+`POST /products/{id}/options` - adds a new product option to the specified product.
+
+```
+curl -k -X POST -H "Content-Type: application/json" -d '{
+    "name": "opt1",
+    "description": "a description",
+}' http://localhost:5000/products/606fd7419d9e58001e151ff8/options
+```
+
+#### Get all options for a product
+
+# `GET /products/{id}/options` - finds all options for a specified product.
+
+```
+curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/products/606fd7419d9e58001e151ff8/options
+```
+
+#### Get option by id for a product
+
+# `GET /products/{id}/options/{optionId}` - finds the specified product option for the specified product.
+
+```
+curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/products/606fd7419d9e58001e151ff8/options/6070f5e2f02234001e4e5f78
+```
+
+#### Update an option for a product
+
+# `PUT /products/{id}/options/{optionId}` - updates the specified product option.
+
+```
+curl -k -X PUT -H "Content-Type: application/json" -d '{
+    "name": "opt1",
+    "description": "a description",
+}' http://localhost:5000/products/606fd7419d9e58001e151ff8/options/6070f5e2f02234001e4e5f78
+```
+
+#### Delete an option for a product
+
+`DELETE /products/{id}/options/{optionId}` - deletes the specified product option.
+
+```
+curl -k -X DELETE -H "Content-Type: application/json" http://localhost:5000/products/606fd7419d9e58001e151ff8/options/6070f5e2f02234001e4e5f78
+```

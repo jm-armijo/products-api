@@ -13,7 +13,7 @@ import { ProductsService } from './products.service';
 
 @Controller('products')
 export class ProductsController {
-    constructor(private readonly productsService: ProductsService) {}
+    constructor(private readonly service: ProductsService) {}
 
     @Post()
     async create(
@@ -22,7 +22,7 @@ export class ProductsController {
         @Body('price')         price:         number,
         @Body('deliveryPrice') deliveryPrice: number,
     ) {
-        const id = await this.productsService.create(
+        const id = await this.service.create(
             name,
             description,
             price,
@@ -34,12 +34,12 @@ export class ProductsController {
 
     @Get()
     async getList(@Query() query) {
-        return await this.productsService.getList(query.name);
+        return await this.service.getList(query.name);
     }
 
     @Get(':id')
     async getOne(@Param('id') id: string) {
-        return await this.productsService.getOne(id);
+        return await this.service.getOne(id);
     }
 
     @Put(':id')
@@ -50,7 +50,7 @@ export class ProductsController {
         @Body('price')         price:         number,
         @Body('deliveryPrice') deliveryPrice: number,
     ) {
-        return await this.productsService.update(
+        return await this.service.update(
             id,
             name,
             description,
@@ -61,6 +61,6 @@ export class ProductsController {
 
     @Delete(':id')
     async delete(@Param('id') id: string) {
-        return await this.productsService.delete(id);
+        return await this.service.delete(id);
     }
 }
