@@ -61,39 +61,43 @@ describe('ProductsController', () => {
     });
 
     describe('create', () => {
-        const name          = 'a name';
-        const description   = 'a description';
-        const price         = 123;
-        const deliveryPrice = 4;
+
+        let data : any = {
+            name          : 'a name',
+            description   : 'a description',
+            price         : 123,
+            deliveryPrice : 4,
+        };
 
         it('should return the id of the new product', async () => {
             const id = 'qwerty-12345-zxcvbn';
             jest.spyOn(service, 'create').mockResolvedValueOnce(id);
 
-            const actual   = await controller.create(name, description, price, deliveryPrice);
+            const actual = await controller.create(data);
             const expected = { id: id };
             expect(actual).toEqual(expected);
         });
 
         it('should raise error if service throws', async () => {
             jest.spyOn(service, 'create').mockImplementationOnce(() => { throw new Error('An error'); });
-            await expect(controller.create(name, description, price, deliveryPrice)).rejects.toThrow('An error');
+            await expect(controller.create(data)).rejects.toThrow('An error');
         });
 
         it('should raise error when name is empty', async () => {
+            data.name = '';
             jest.spyOn(service, 'create').mockImplementationOnce(() => { throw new Error('ValidationError'); });
-            await expect(controller.create(name, description, price, deliveryPrice)).rejects.toThrow('ValidationError');
+            await expect(controller.create(data)).rejects.toThrow('ValidationError');
         });
     });
 
     describe('getList', () => {
         it('should return all products when name is undefined',  async () => {
-            const name  = undefined;
-            const query = { name: name, };
-            const list  = [prod1, prod2, prod3,];
+            const name = undefined;
+            const data = { name: name, };
+            const list = [prod1, prod2, prod3,];
             jest.spyOn(service, 'getList').mockResolvedValueOnce(list);
 
-            const actual   = await controller.getList(query);
+            const actual   = await controller.getList(data);
             const expected = list
             expect(actual).toEqual(expected);
         });
@@ -151,27 +155,31 @@ describe('ProductsController', () => {
     });
 
     describe('update', () => {
-        let   id            = 'any-id';
-        const name          = 'a name';
-        const description   = 'a description';
-        const price         = 123;
-        const deliveryPrice = 4;
+        let id = undefined;
+        let data : any = {
+            name          : undefined,
+            description   : undefined,
+            price         : undefined,
+            deliveryPrice : undefined,
+        };
 
-        it('should succeed when product exists',  async () => {
+        it('should not throw exception when product exists',  async () => {
             id = 'zxcvb-mnbvc-lkjhg';
+            data.price = 5;
+
             jest.spyOn(service, 'update').mockImplementationOnce( () => { return Promise.resolve(undefined); });
-            await expect(controller.update(id, name, description, price, deliveryPrice)).resolves.not.toThrow();
+            await expect(controller.update(id, data)).resolves.not.toThrow();
         });
 
         it('should raise error when product does not exist',  async () => {
             id = 'no-product-for-this-id';
             jest.spyOn(service, 'update').mockImplementationOnce(() => { throw new Error('CastError'); });
-            await expect(controller.update(id, name, description, price, deliveryPrice)).rejects.toThrow('CastError');
+            await expect(controller.update(id, data)).rejects.toThrow('CastError');
         });
 
         it('should raise error when service throws',  async () => {
             jest.spyOn(service, 'update').mockImplementationOnce(() => { throw new Error('AnyError'); });
-            await expect(controller.update(id, name, description, price, deliveryPrice)).rejects.toThrow('AnyError');
+            await expect(controller.update(id, data)).rejects.toThrow('AnyError');
         });
     });
 

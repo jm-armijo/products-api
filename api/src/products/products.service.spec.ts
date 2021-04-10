@@ -6,14 +6,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { ProductsService } from './products.service';
 import { Product, ProductSchema } from './product.model';
+import { Option, OptionSchema } from '../options/option.model';
 
 
 describe('ProductsService', () => {
     let service: ProductsService;
     let model;
+    let modelOption;
 
     beforeEach(async () => {
-        model = mongoose.model('Products', ProductSchema);
+        model = mongoose.model('Product', ProductSchema);
+        modelOption = mongoose.model('Option', OptionSchema);
 
         const moduleRef: TestingModule = await Test.createTestingModule({
             providers: [
@@ -22,6 +25,10 @@ describe('ProductsService', () => {
                     provide: getModelToken('Product'),
                     useValue: model,
                 },
+                {
+                    provide: getModelToken('Option'),
+                    useValue: modelOption,
+                },
             ],
         }).compile();
 
@@ -29,33 +36,32 @@ describe('ProductsService', () => {
     });
 
     describe('create', () => {
+        let args : any = {
+            name:          'a name',
+            description:   'a description',
+            price:         123,
+            deliveryPrice: 4
+        };
+
         it('should return the id of the new product', async () => {
-            const name          = 'a name';
-            const description   = 'a description';
-            const price         = 123;
-            const deliveryPrice = 4;
-            const id            = 'qwerty-12345-zxcvbn';
+            const id = 'qwerty-12345-zxcvbn';
 
             let mockedResponse: any = {};
             mockedResponse.id = id;
 
             jest.spyOn(model.prototype, 'save').mockResolvedValue(mockedResponse);
 
-            const actual = await service.create(name, description, price, deliveryPrice);
+            const actual = await service.create(args);
             const expected = id;
             expect(actual).toEqual(expected);
         });
 
         it('should raise error when name is empty', async () => {
-            const name          = '';
-            const description   = 'a description';
-            const price         = 123;
-            const deliveryPrice = 4;
-
+            args.name = '';
             jest.spyOn(model.prototype, 'save').mockImplementation(() => { throw new Error("ValidationError"); });
 
             try {
-                const actual = await service.create(name, description, price, deliveryPrice);
+                const actual = await service.create(args);
                 expect(actual).toBeUndefined();
             } catch (error) {
                 expect(error.message).toEqual('ValidationError');

@@ -1,5 +1,12 @@
+import { NotFoundException} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OptionsController } from './options.controller';
+
+import { CreateOptionDto, CreateOptionDataDto, CreateOptionParamsDto } from './dto/create_option_dto';
+import { GetOptionDto, GetOptionFilterDto } from './dto/get_option_dto';
+import { GetOptionsDto } from './dto/get_options_dto';
+import { UpdateOptionDataDto, UpdateOptionFilterDto, UpdateOptionParamsDto } from './dto/update_option_dto';
+import { DeleteOptionFilterDto, DeleteOptionParamsDto } from './dto/delete_option_dto';
 
 describe('OptionsController', () => {
     class OptionsService {
@@ -60,132 +67,92 @@ describe('OptionsController', () => {
     });
 
     describe('create', () => {
-        const productId     = prodId1;
-        const name          = 'option1';
-        const description   = 'desc1';
+        const params : CreateOptionParamsDto = { productId: 'prodId1' };
+        const data : CreateOptionDataDto = { name: opt1.name, description: opt1.description };
 
-        it('should return the id of the new option', async () => {
-            const id = 'zxcvb-mnbvc-lkjhg';
-            jest.spyOn(service, 'create').mockResolvedValueOnce(id);
-
-            const actual   = await controller.create(productId, name, description);
-            const expected = { id: id };
-            expect(actual).toEqual(expected);
+        it('should return the id of the new option when the product exists', async () => {
+            jest.spyOn(service, 'create').mockResolvedValueOnce(opt1.id);
+            await expect(controller.create(params, data)).resolves.toEqual({ id: opt1.id });
         });
 
-        it('should raise error if service throws', async () => {
-            jest.spyOn(service, 'create').mockImplementationOnce(() => { throw new Error('An error'); });
-            await expect(controller.create(productId, name, description)).rejects.toThrow('An error');
+        it('should raise error when product does not exist', async () => {
+            jest.spyOn(service, 'create').mockImplementationOnce(() => { throw new NotFoundException; });
+            await expect(controller.create(params, data)).rejects.toThrow(new NotFoundException);
         });
 
         it('should raise error when name is empty', async () => {
             jest.spyOn(service, 'create').mockImplementationOnce(() => { throw new Error('ValidationError'); });
-            await expect(controller.create(productId, name, description)).rejects.toThrow('ValidationError');
+            await expect(controller.create(params, data)).rejects.toThrow('ValidationError');
         });
     });
 
     describe('getList', () => {
-        it('should return all options when name is undefined', async () => {
-            const name  = undefined;
-            const list  = [opt2, opt3,];
-            jest.spyOn(service, 'getList').mockResolvedValueOnce(list);
+        let params : GetOptionsDto = {productId: prodId2};
 
-            const actual   = await controller.getList(prodId2, name);
-            const expected = list
-            expect(actual).toEqual(expected);
+        it('should return all options when product exists', async () => {
+            const list = [opt2, opt3,];
+            jest.spyOn(service, 'getList').mockResolvedValueOnce(list);
+            await expect(controller.getList(params)).resolves.toEqual(list);
         });
 
-        it('should return producs filtered by name when name is defined', async () => {
-            const name  = 'option2';
-            const query = { name: name, };
-            const list  = [opt2,];
-            jest.spyOn(service, 'getList').mockResolvedValueOnce(list);
-
-            const actual   = await controller.getList(prodId2, name);
-            const expected = list
-            expect(actual).toEqual(expected);
+        it('should raise error when product does not exist', async () => {
+            jest.spyOn(service, 'getList').mockImplementationOnce(() => { throw new NotFoundException; });
+            await expect(controller.getList(params)).rejects.toThrow(new NotFoundException);
         });
 
-        it('should return empty list when option name does not exist', async () => {
-            const name  = 'badprod';
-            const query = { name: name, };
-            const list  = [];
+        it('should return empty list when products does not have options', async () => {
+            const list = [];
             jest.spyOn(service, 'getList').mockResolvedValueOnce(list);
+            await expect(controller.getList(params)).resolves.toEqual(list);
+        });
+    });
 
-            const actual   = await controller.getList(prodId2, name);
-            const expected = list
-            expect(actual).toEqual(expected);
+    describe('getOne', () => {
+        let params : GetOptionDto = {productId: prodId2, id: opt2.id};
+
+        it('should return the matching option when product and option exist', async () => {
+            jest.spyOn(service, 'getOne').mockResolvedValueOnce(opt2);
+            await expect(controller.getOne(params)).resolves.toEqual(opt2);
+        });
+
+        it('should raise error when product and/or option do not exist', async () => {
+            jest.spyOn(service, 'getOne').mockImplementationOnce(() => { throw new NotFoundException; });
+            await expect(controller.getOne(params)).rejects.toThrow(new NotFoundException);
         });
     });
 
     describe('update', () => {
-        let   productId   = 'any-product';
-        let   id          = 'any-id';
-        const name        = 'a name';
-        const description = 'a description';
+        let params : UpdateOptionParamsDto = {productId: prodId1, id: opt1.id};
+        let data : UpdateOptionDataDto = { name: 'new name', description: 'new description' };
 
-        it('should succeed when option exists', async () => {
-            id = 'zxcvb-mnbvc-lkjhg';
+        it('should update option when product and option exist', async () => {
             jest.spyOn(service, 'update').mockImplementationOnce( () => { return Promise.resolve(undefined); });
-            await expect(controller.update(productId, id, name, description)).resolves.not.toThrow();
+            await expect(controller.update(params, data)).resolves.toBeUndefined();
         });
 
-        it('should raise error when option does not exist', async () => {
-            id = 'no-option-for-this-id';
-            jest.spyOn(service, 'update').mockImplementationOnce(() => { throw new Error('CastError'); });
-            await expect(controller.update(productId, id, name, description)).rejects.toThrow('CastError');
+        it('should raise error when product and/or option do not exist', async () => {
+            jest.spyOn(service, 'update').mockImplementationOnce(() => { throw new NotFoundException; });
+            await expect(controller.update(params, data)).rejects.toThrow(new NotFoundException);
         });
 
-        it('should raise error when product does not exist', async () => {
-            id = 'no-option-for-this-id';
-            jest.spyOn(service, 'update').mockImplementationOnce(() => { throw new Error('CastError'); });
-            await expect(controller.update(productId, id, name, description)).rejects.toThrow('CastError');
-        });
-
-        it('should raise error when service throws', async () => {
-            jest.spyOn(service, 'update').mockImplementationOnce(() => { throw new Error('AnyError'); });
-            await expect(controller.update(productId, id, name, description)).rejects.toThrow('AnyError');
+        it('should succeed when no data is updated', async () => {
+            data = { name: undefined, description: undefined };
+            jest.spyOn(service, 'update').mockImplementationOnce( () => { return Promise.resolve(undefined); });
+            await expect(controller.update(params, data)).resolves.toBeUndefined();
         });
     });
 
     describe('delete', () => {
-        let productId = 'any-product';
+        let params : UpdateOptionParamsDto = {productId: prodId1, id: opt1.id};
 
-        it('should delete one option when option exists', async () => {
-            const id = 'zxcvb-mnbvc-lkjhg';
-            jest.spyOn(service, 'delete').mockResolvedValueOnce(opt1);
-
-            const actual   = await controller.delete(productId, id);
-            const expected = opt1
-            expect(actual).toEqual(expected);
+        it('should delete the option when product and option exist', async () => {
+            jest.spyOn(service, 'delete').mockImplementationOnce( () => { return Promise.resolve(undefined); });
+            await expect(controller.delete(params)).resolves.toBeUndefined();
         });
 
-        it('should raise error when option does not exist', async () => {
-            const id      = 'no-option-for-this-id';
-            const option = {};
-            jest.spyOn(service, 'delete').mockResolvedValueOnce(option);
-
-            const actual   = await controller.delete(productId, id);
-            const expected = option;
-            expect(actual).toEqual(expected);
-        });
-
-        it('should raise error when product does not exist', async () => {
-            const id      = 'no-option-for-this-id';
-            const option = {};
-            jest.spyOn(service, 'delete').mockResolvedValueOnce(option);
-
-            const actual   = await controller.delete(productId, id);
-            const expected = option;
-            expect(actual).toEqual(expected);
-        });
-
-        it('should raise error when service throws', async () => {
-            const id   = 'bad-id';
-            const list = [];
-
-            jest.spyOn(service, 'delete').mockImplementationOnce(() => { throw new Error('CastError'); });
-            await expect(controller.delete(productId, id)).rejects.toThrow('CastError');
+        it('should raise error when product and/or option do not exist', async () => {
+            jest.spyOn(service, 'delete').mockImplementationOnce(() => { throw new NotFoundException; });
+            await expect(controller.delete(params)).rejects.toThrow(new NotFoundException);
         });
     });
 });

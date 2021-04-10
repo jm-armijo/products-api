@@ -1,75 +1,60 @@
-import { Injectable} from '@nestjs/common';
+import { Injectable, NotFoundException} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
+import { Product } from '../products/product.model';
 import { Option } from './option.model';
+
+import { CreateOptionDto } from './dto/create_option_dto';
+import { GetOptionFilterDto } from './dto/get_option_dto';
+import { GetOptionsDto } from './dto/get_options_dto';
+import { UpdateOptionDataDto, UpdateOptionFilterDto } from './dto/update_option_dto';
+import { DeleteOptionFilterDto } from './dto/delete_option_dto';
 
 @Injectable()
 export class OptionsService {
     constructor(
+        @InjectModel('Product') private readonly productModel: Model<Product>,
         @InjectModel('Option') private readonly optionModel: Model<Option>,
     ) {}
 
-    async create(
-        productId:   string,
-        name:        string,
-        description: string,
-    ) {
-        const model = new this.optionModel({
-            productId,
-            name,
-            description,
-        });
-        const result = await model.save();
+    async create(data: CreateOptionDto) {
+        await this.assertProductExists(data.productId);
+        const result = await new this.optionModel(data).save();
         return result.id as string;
     }
 
-    async getList(
-        productId: string,
-        name:      string,
-    ) {
-        let filter : any = { productId : productId };
-        if (name == undefined) {
-            filter.name = name;
-        }
-
-        const options = await this.optionModel.find(filter).exec();
-        return options.map(option => (this.mapOption(option)));
+    async getList(params: GetOptionsDto) {
+        await this.assertProductExists(params.productId);
+        return await this.optionModel.find(params).exec();
     }
 
-    async update(
-        productId:   string,
-        id:          string,
-        name:        string,
-        description: string,
-    ) : Promise<void> {
-        let update: any = {};
-
-        if (name !== undefined) {
-            update.name = name;
-        }
-
-        if (description !== undefined) {
-            update.description = description;
-        }
-
-        await this.optionModel.findByIdAndUpdate(id, update).where({ productId: productId });
+    async getOne(filter: GetOptionFilterDto) {
+        await this.assertOptionExists(filter);
+        return await this.optionModel.findOne(filter).exec();
     }
 
-    async delete(productId: string, id: string) {
-        await this.optionModel.findByIdAndDelete(id).where({ productId: productId });
+    async update(filter: UpdateOptionFilterDto, data: UpdateOptionDataDto) : Promise<void> {
+        await this.assertOptionExists(filter);
+        await this.optionModel.findOneAndUpdate(filter, data).exec();
     }
 
-    mapOption(option: Option) {
-        if (option == undefined) {
-            return {};
-        }
+    async delete(filter: DeleteOptionFilterDto) {
+        await this.assertOptionExists(filter);
+        await this.optionModel.findOneAndDelete(filter).exec();
+    }
 
-        return {
-            id:            option.id,
-            productId:     option.productId,
-            name:          option.name,
-            description:   option.description,
-        };
+    async assertProductExists(id: string) {
+        const option = await this.productModel.findById(id).exec();
+        if (option == null) {
+            throw new NotFoundException;
+        }
+    }
+
+    async assertOptionExists(filter: any) {
+        const option = await this.optionModel.findOne(filter).exec();
+        if (option == null) {
+            throw new NotFoundException;
+        }
     }
 }
