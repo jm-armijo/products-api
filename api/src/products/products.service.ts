@@ -38,19 +38,13 @@ export class ProductsService {
     async delete(id: string) {
         await this.assertProductExists(id);
 
-        // Use transaction to delete from the two schemas
-        const session : any = await this.productModel.startSession();
-        await session.withTransaction(async () => {
-            try {
-                await this.optionModel.deleteMany({ productId: id });
-                await this.productModel.findByIdAndDelete(id);
-                await session.commitTransaction();
-            } catch (error) {
-                await session.abortTransaction();
-            } finally {
-                session.endSession();
-            }
-        });
+        // MongoDB does not support sessions for different schemas, so
+        // we cannot make atomic operations on product and options to rollback
+        // in case of an exception. Any attempt to do a manual rollback is
+        // destined to fail, so just living with that until we can find
+        // a solution for this issue.
+        await this.optionModel.deleteMany({ productId: id });
+        await this.productModel.findByIdAndDelete(id);
     }
 
     async assertProductExists(id: string) {
