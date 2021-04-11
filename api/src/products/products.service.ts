@@ -1,21 +1,10 @@
-import { Injectable, NotFoundException} from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-
-import { Product } from './product.model';
-import { Option } from '../options/option.model';
+import { AppService } from '../app.service';
 
 import { CreateProductDto } from './dto/create_product_dto';
 import { GetProductsDto } from './dto/get_products_dto';
 import { UpdateProductDto } from './dto/update_product_dto';
 
-@Injectable()
-export class ProductsService {
-    constructor(
-        @InjectModel('Product') private readonly productModel: Model<Product>,
-        @InjectModel('Option') private readonly optionModel: Model<Option>,
-    ) {}
-
+export class ProductsService extends AppService {
     async create(data: CreateProductDto) {
         const result = await new this.productModel(data).save();
         return result.id as string;
@@ -45,12 +34,5 @@ export class ProductsService {
         // a solution for this issue.
         await this.optionModel.deleteMany({ productId: id });
         await this.productModel.findByIdAndDelete(id);
-    }
-
-    async assertProductExists(id: string) {
-        const option = await this.productModel.findById(id).exec();
-        if (option == null) {
-            throw new NotFoundException;
-        }
     }
 }
