@@ -48,180 +48,681 @@ Any changes to these variables will take effect after the components (i.e. db an
 
 ## Usage
 
-#### Create new product
+#### Create product
 
-`POST /products` - creates a new product.
+Creates a new product.
 
-Example request:
+* **URL**
 
-```
-curl -k -X POST -H "Content-Type: application/json" -d '{
-    "name": "test product",
-    "description": "this is a test product",
-    "price": 234.50,
-    "deliveryPrice": 3.5
-}' http://localhost:5000/products
-```
+  `/products`
 
-Example response:
-```
-{
-    "id": "60710c576561d8001e3b6050"
-}
-```
+* **Method:**
 
-#### Get all products
+  `POST`
 
-`GET /products` - gets all products.
+* **Data Params**
 
-Example request:
+  **Required:**
 
-```
-curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/products
-```
+    `name=[string]`
 
-Example response:
-```
-[
-    {
-        "id": "606fde248fd452001e807013",
-        "name": "test",
-        "description": "my 1st product",
-        "price": 23,
-        "deliveryPrice": 3.5
-    },
-    {
-        "id": "606fe1f680b2db001f97fde1",
-        "name": "test1",
-        "description": "test description",
-        "price": 32,
-        "deliveryPrice": 3.3
-    },
-    {
-        "id": "60710c576561d8001e3b6050",
-        "name": "test product",
-        "description": "this is a test product",
-        "price": 234.5,
-        "deliveryPrice": 3.5
-    }
-]
-```
+    `description=[string]`
 
-#### Get products by name
+    `price=[number]`
 
-`GET /products?name={name}` - finds all products matching the specified name.
+    `deliveryPrice=[number]`
 
-Example request:
 
-```
-curl -k -X GET -H "Content-Type: application/json" https://localhost:5000/products?name=test%20product
-```
+* **Success Response:**
 
-Example response:
-```
-[
-    {
-        "id": "60710c576561d8001e3b6050",
-        "name": "test product",
-        "description": "this is a test product",
-        "price": 234.5,
-        "deliveryPrice": 3.5
-    }
-]
-```
+  * **Code:** 201 <br />
+    **Content:** `{ "id": "60710c576561d8001e3b6050" }`
 
-#### Get product by id
+* **Error Response:**
 
-`GET /products/{id}` - gets the project that matches the specified ID - ID is a GUID.
+  * **Code:** 400 <br />
+    **Content:**
 
-Example request:
-```
-curl -k -X GET -H "Content-Type: application/json" https://localhost:5000/products/60710c576561d8001e3b6050
-```
+        {
+            "statusCode": 400,
+            "message": [
+                "name should not be empty"
+            ],
+            "error": "Bad Request"
+        }
 
-Example response:
-```
-{
-    "id": "60710c576561d8001e3b6050",
-    "name": "test product",
-    "description": "this is a test product",
-    "price": 234.5,
-    "deliveryPrice": 3.5
-}
-```
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "description should not be emp
+            ],
+            "error": "Bad Request"
+        }
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "price must not be less than 0",
+                "price must be a number conforming to the specified constraints"
+            ],
+            "error": "Bad Request"
+        }
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "deliveryPrice must not be less than 0",
+                "deliveryPrice must be a number conforming to the specified constraints"
+            ],
+            "error": "Bad Request"
+        }
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "Unexpected token } in JSON at position 117"
+            ],
+            "error": "Bad Request"
+        }
+
+* **Sample Call:**
+
+        curl -k -X POST -H "Content-Type: application/json" -d '{
+            "name": "test product",
+            "description": "this is a test product",
+            "price": 234.50,
+            "deliveryPrice": 3.5
+        }' http://localhost:5000/products
+
+
+#### Get list of products
+
+Gets a list of all products. If a name is passed, it gets all products matching the specified name (exact match).
+
+* **URL**
+
+  `/products`
+
+* **Method:**
+
+  `GET`
+
+*  **URL Params**
+
+  **Optional:**
+
+      `name=[string]`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:**
+
+        [
+            {
+                "id": "606fde248fd452001e807013",
+                "name": "test",
+                "description": "my 1st product",
+                "price": 23,
+                "deliveryPrice": 3.5
+            },
+            {
+                "id": "606fe1f680b2db001f97fde1",
+                "name": "test1",
+                "description": "test description",
+                "price": 32,
+                "deliveryPrice": 3.3
+            },
+            {
+                "id": "60710c576561d8001e3b6050",
+                "name": "test product",
+                "description": "this is a test product",
+                "price": 234.5,
+                "deliveryPrice": 3.5
+            }
+        ]
+
+* **Error Response:**
+
+  * **Code:** 401<br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "name should not be empty"
+            ],
+            "error": "Bad Request"
+        }
+
+* **Sample Call:**
+
+        curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/products
+
+        curl -k -X GET -H "Content-Type: application/json" https://localhost:5000/products?name=test%20product
+
+#### Get one product
+
+Gets the product that matches the specified ID
+
+* **URL**
+
+  `/products/{id}`
+
+* **Method:**
+
+  `GET`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:**
+
+        {
+            "id": "60710c576561d8001e3b6050",
+            "name": "test product",
+            "description": "this is a test product",
+            "price": 234.5,
+            "deliveryPrice": 3.5
+        }
+
+* **Error Response:**
+
+  * **Code:** 404 <br />
+    **Content:** `{ "statusCode": 404, "message": "Not Found" }`
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "id must be a mongodb id"
+            ],
+            "error": "Bad Request"
+        }
+
+* **Sample Call:**
+
+        curl -k -X GET -H "Content-Type: application/json" https://localhost:5000/products/60710c576561d8001e3b6050
 
 #### Update a product
 
-`PUT /products/{id}` - updates a product.
+Updates a product.
 
-Example request:
+* **URL**
 
-```
-curl -k -X PIT -H "Content-Type: application/json" -d '{
-    "price": 123.4,
-    "deliveryPrice": 2.3
-}' http://localhost:5000/products/60710c576561d8001e3b6050
-```
+  `/products/{id}`
 
-Example response (empty):
-```
-```
+* **Method:**
+
+  `PUT`
+
+* **Data Params**
+
+   **Optional:**
+
+      `name=[string]`
+
+      `description=[string]`
+
+      `price=[number]`
+
+      `deliveryPrice=[number]`
+
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** ` `
+
+
+* **Error Response:**
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "name should not be empty"
+            ],
+            "error": "Bad Request"
+        }
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "description should not be emp
+            ],
+            "error": "Bad Request"
+        }
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "price must not be less than 0",
+                "price must be a number conforming to the specified constraints"
+            ],
+            "error": "Bad Request"
+        }
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "deliveryPrice must not be less than 0",
+                "deliveryPrice must be a number conforming to the specified constraints"
+            ],
+            "error": "Bad Request"
+        }
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "id must be a mongodb id"
+            ],
+            "error": "Bad Request"
+        }
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "Unexpected token } in JSON at position 88"
+            ],
+            "error": "Bad Request"
+        }
+
+* **Sample Call:**
+
+        curl -k -X PIT -H "Content-Type: application/json" -d '{
+            "price": 123.4,
+            "deliveryPrice": 2.3
+        }' http://localhost:5000/products/60710c576561d8001e3b6050
 
 #### Delete a product
 
-`DELETE /products/{id}` - deletes a product and its options.
+Deletes a product and its options.
 
-Example request:
-```
-curl -k -X DELETE -H "Content-Type: application/json" https://localhost:5000/products/60710c576561d8001e3b6050
-```
+* **URL**
 
-Example response (empty):
-```
-```
+  `/products/{id}`
+
+* **Method:**
+
+  `DELETE`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** ` `
+
+
+* **Error Response:**
+
+  * **Code:** 404 <br />
+    **Content:** `{ "statusCode": 404, "message": "Not Found" }`
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "id must be a mongodb id"
+            ],
+            "error": "Bad Request"
+        }
+
+* **Sample Call:**
+
+        curl -k -X DELETE -H "Content-Type: application/json" https://localhost:5000/products/60710c576561d8001e3b6050
 
 #### Create an option
 
-`POST /products/{id}/options` - adds a new product option to the specified product.
+Adds a new product option to the specified product.
 
-```
-curl -k -X POST -H "Content-Type: application/json" -d '{
-    "name": "opt1",
-    "description": "a description",
-}' http://localhost:5000/products/606fd7419d9e58001e151ff8/options
-```
+* **URL**
 
-#### Get all options for a product
+  `/products/{id}/options`
 
-# `GET /products/{id}/options` - finds all options for a specified product.
+* **Method:**
 
-```
-curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/products/606fd7419d9e58001e151ff8/options
-```
+`POST`
 
-#### Get option by id for a product
+  * **Data Params**
 
-# `GET /products/{id}/options/{optionId}` - finds the specified product option for the specified product.
+  **Required:**
 
-```
-curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/products/606fd7419d9e58001e151ff8/options/6070f5e2f02234001e4e5f78
-```
+    `name=[string]`
+
+    `description=[string]`
+
+* **Success Response:**
+
+  * **Code:** 201 <br />
+    **Content:** `{ "id": "607518aee85d45001ebd72ee" }`
+
+* **Error Response:**
+
+  * **Code:** 404 <br />
+    **Content:** `{ "statusCode": 404, "message": "Not Found" }`
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "productId must be a mongodb id"
+            ],
+            "error": "Bad Request"
+        }
+
+* **Sample Call:**
+
+        curl -k -X POST -H "Content-Type: application/json" -d '{
+            "name": "opt1",
+            "description": "a description",
+        }' http://localhost:5000/products/606fd7419d9e58001e151ff8/options
+
+#### Get list of options for a product
+
+Finds all options for a specified product.
+
+* **URL**
+
+  `/products/{id}/options`
+
+* **Method:**
+
+  `GET`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:**
+
+        [
+            {
+                "id": "60751b860ee408001fad027b",
+                "productId": "606fb2a11fe8b00029aa09f8",
+                "name": "option 1",
+                "description": "description option 1"
+            },
+            {
+                "id": "60751b8b0ee408001fad027c",
+                "productId": "606fb2a11fe8b00029aa09f8",
+                "name": "option 2",
+                "description": "description option 2"
+            }
+        ]
+
+* **Error Response:**
+
+  * **Code:** 404 <br />
+    **Content:** `{ "statusCode": 404, "message": "Not Found" }`
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "productId must be a mongodb id"
+            ],
+            "error": "Bad Request"
+        }
+
+* **Sample Call:**
+
+        curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/products/606fd7419d9e58001e151ff8/options
+
+#### Get one option for a product
+
+Finds the specified product option for the specified product.
+
+* **URL**
+
+  `/products/{id}/options/{optionId}`
+
+* **Method:**
+
+  `GET`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:**
+
+        {
+            "id": "60751b860ee408001fad027b",
+            "productId": "606fb2a11fe8b00029aa09f8",
+            "name": "option 1",
+            "description": "description option 1"
+        }
+
+* **Error Response:**
+
+  * **Code:** 404 <br />
+    **Content:** `{ "statusCode": 404, "message": "Not Found" }`
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "id must be a mongodb id"
+            ],
+            "error": "Bad Request"
+        }
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "productId must be a mongodb id"
+            ],
+            "error": "Bad Request"
+        }
+
+* **Sample Call:**
+
+        curl -k -X GET -H "Content-Type: application/json" http://localhost:5000/products/606fd7419d9e58001e151ff8/options/6070f5e2f02234001e4e5f78
 
 #### Update an option for a product
 
-# `PUT /products/{id}/options/{optionId}` - updates the specified product option.
+Updates the specified product option.
 
-```
-curl -k -X PUT -H "Content-Type: application/json" -d '{
-    "name": "opt1",
-    "description": "a description",
-}' http://localhost:5000/products/606fd7419d9e58001e151ff8/options/6070f5e2f02234001e4e5f78
-```
+* **URL**
+
+  `/products/{id}/options/{optionId}`
+
+* **Method:**
+
+  `PUT`
+
+* **Data Params**
+
+   **Optional:**
+
+    `name=[string]`
+  
+    `description=[string]`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** ` `
+
+* **Error Response:**
+
+  * **Code:** 404 <br />
+    **Content:** `{ "statusCode": 404, "message": "Not Found" }`
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "id must be a mongodb id"
+            ],
+            "error": "Bad Request"
+        }
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "productId must be a mongodb id"
+            ],
+            "error": "Bad Request"
+        }
+
+* **Sample Call:**
+
+        curl -k -X PUT -H "Content-Type: application/json" -d '{
+            "name": "opt1",
+            "description": "a description",
+        }' http://localhost:5000/products/606fd7419d9e58001e151ff8/options/6070f5e2f02234001e4e5f78
 
 #### Delete an option for a product
 
-`DELETE /products/{id}/options/{optionId}` - deletes the specified product option.
+Deletes the specified product option.
 
-```
-curl -k -X DELETE -H "Content-Type: application/json" http://localhost:5000/products/606fd7419d9e58001e151ff8/options/6070f5e2f02234001e4e5f78
-```
+* **URL**
+
+  `/products/{id}/options/{optionId}`
+
+* **Method:**
+
+  `DELETE`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** ` `
+
+
+* **Error Response:**
+
+  * **Code:** 404 <br />
+    **Content:** `{ "statusCode": 404, "message": "Not Found" }`
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "id must be a mongodb id"
+            ],
+            "error": "Bad Request"
+        }
+
+  OR
+
+  * **Code:** 400 <br />
+    **Content:**
+
+        {
+            "statusCode": 400,
+            "message": [
+                "productId must be a mongodb id"
+            ],
+            "error": "Bad Request"
+        }
+
+* **Sample Call:**
+
+        curl -k -X DELETE -H "Content-Type: application/json" http://localhost:5000/products/606fd7419d9e58001e151ff8/options/6070f5e2f02234001e4e5f78
+
+# Future work
+
+The following work is required to make this API ready for a production environment:
+
+* Support authentication at least for creating, updating and deleting items.
+* Cache requests, particularly those that get the lists of products/options.
+* Implement pagination on the requests that return lists of products/options.
+* Use certificates signed by Certificate Authority (currentrly provided self-signed certificates to connect to the API).
+* Use certificates to connect from the API to the Database (database credentials are stored in this git repository at the moment).
+* Complete Unit Tests
+
+These are other features that may be nice to have in the future:
+* Sort lists by any field, in any order.
+* Filter list of products by any field, not just name.
+* Improved search capabilities (ignore case, regex search?)
+
+Also, please note that this API runs in docker containers to facilitate using it for demo purposes. When deployed to a proper production environment it is important to estimate the demand to provide enough capacity: consider using AWS.
+
+### Documentation
+
+Additional documentation can be found [here](documentation/)
