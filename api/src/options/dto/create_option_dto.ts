@@ -1,10 +1,10 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsMongoId, IsNotEmpty } from 'class-validator';
 import { PickType } from '@nestjs/mapped-types'
 
 import { GetOptionDto } from './get_option_dto';
 
 export class CreateOptionDto {
-    @IsNotEmpty()
+    @IsMongoId()
     productId: string
 
     @IsNotEmpty()

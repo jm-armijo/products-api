@@ -1,18 +1,18 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsMongoId } from 'class-validator';
 
 export class GetOptionDto {
-    @IsNotEmpty()
+    @IsMongoId()
     id: string;
 
-    @IsNotEmpty()
+    @IsMongoId()
     productId: string;
 }
 
 export class GetOptionFilterDto {
-    @IsNotEmpty()
+    @IsMongoId()
     _id: string;
 
-    @IsNotEmpty()
+    @IsMongoId()
     productId: string;
 
     constructor(params) {

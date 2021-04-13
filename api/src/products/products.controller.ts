@@ -14,6 +14,7 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create_product_dto';
 import { GetProductsDto } from './dto/get_products_dto';
 import { UpdateProductDto } from './dto/update_product_dto';
+import { ProductFilterDto } from './dto/product_filter_dto';
 
 @Controller('products')
 export class ProductsController {
@@ -31,17 +32,17 @@ export class ProductsController {
     }
 
     @Get(':id')
-    async getOne(@Param('id') id: string) {
-        return await this.service.getOne(id);
+    async getOne(@Param() params : ProductFilterDto ) {
+        return await this.service.getOne(params);
     }
 
     @Put(':id')
-    async update(@Param('id') id: string, @Body() data: UpdateProductDto) {
-        return await this.service.update(id, data);
+    async update(@Param() params : ProductFilterDto, @Body() data: UpdateProductDto) {
+        return await this.service.update(params, data);
     }
 
     @Delete(':id')
-    async delete(@Param('id') id: string) {
-        return await this.service.delete(id);
+    async delete(@Param() params : ProductFilterDto) {
+        return await this.service.delete(params);
     }
 }

@@ -9,7 +9,7 @@ describe('Products', () => {
     let getListCount : number = 0;
 
     const prod1 = {
-        id:            'zxcvb-mnbvc-lkjhg',
+        id:            '60712e92099c4b001e3af461',
         name:          'prod1',
         description:   'desc1',
         price:         12,
@@ -17,7 +17,7 @@ describe('Products', () => {
     };
 
     const prod2 = {
-        id:            'zxcvb-mnbvc-lkjhk',
+        id:            '606e9304d94efa002a6cc949',
         name:          'prodx',
         description:   'desc2',
         price:         13,
@@ -25,7 +25,7 @@ describe('Products', () => {
     };
 
     const prod3 = {
-        id:            'zxcvb-mnbvc-lkjhl',
+        id:            '606e96fe7a5cef00295c97a1',
         name:          'prodx',
         description:   'desc3',
         price:         14,

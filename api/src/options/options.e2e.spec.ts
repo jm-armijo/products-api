@@ -9,23 +9,23 @@ describe('Options', () => {
     let getListCount : number = 0;
 
     const opt1 = {
-        id:            'zxcvb-mnbvc-lkjhg',
-        productId:     'dorp-poiuy-trewq',
-        name:          'option1',
+        id:            '606eeff503678c001fad9076',
+        productId:     '60712e92099c4b001e3af461',
+        name:          'opt1',
         description:   'desc1',
     };
 
     const opt2 = {
-        id:            'zxcvb-mnbvc-lkjhk',
-        productId:     'prod-poiuy-trewq',
-        name:          'option2',
+        id:            '606f813c9cb725001e4435ad',
+        productId:     '606e9304d94efa002a6cc949',
+        name:          'optx',
         description:   'desc2',
     };
 
     const opt3 = {
-        id:            'zxcvb-mnbvc-lkjhl',
-        productId:     'prod-poiuy-trewq',
-        name:          'option3',
+        id:            '606f814f9cb725001e4435ae',
+        productId:     '606e9304d94efa002a6cc949',
+        name:          'optx',
         description:   'desc3',
     };
 
